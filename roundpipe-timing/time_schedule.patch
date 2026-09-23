@@ -1,0 +1,20 @@
+diff --git a/roundpipe/roundpipe.py b/roundpipe/roundpipe.py
+index 08ac480..11c41df 100644
+--- a/roundpipe/roundpipe.py
++++ b/roundpipe/roundpipe.py
+@@ -538,7 +538,15 @@ class RoundPipe(RoundPipeBase):
+         self.model_timer.update_times()
+         execute_plan = full_run_config.execute_plan
+         if execute_plan is None:
++            import time
++            global ScheduleTime
++            if "ScheduleTime" not in globals():
++                ScheduleTime = []
++            start = time.time()
+             execute_plan = ModelExecutePlan.auto("fused", self)
++            IterScheduleTime = time.time() - start
++            ScheduleTime.append(IterScheduleTime)
++            print(f"Schedule time for this iteration: {IterScheduleTime * 1000:.3f}ms, average schedule time: {sum(ScheduleTime)/len(ScheduleTime) * 1000:.3f}ms")
+         execute_plan.check_valid(self.num_layers, "fused")
+         timer = IterTimer(self.model_timer)
+         tracker = ModelTracker(execute_plan)
